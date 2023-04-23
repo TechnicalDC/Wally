@@ -1,0 +1,69 @@
+#!/bin/bash
+#	   				 __ __        
+# .--.--.--.---.-.|  |  |.--.--.
+# |  |  |  |  _  ||  |  ||  |  |
+# |________|___._||__|__||___  |
+#					     |_____|
+#
+# Github: https://github.com/TechnicalDC/dc-scripts
+
+THEME="$HOME/.config/rofi/themes/fancy_min.rasi"
+WALLPAPERS_DIR="$HOME/Wallpapers"
+COLORSCHEME_DIR="$HOME/.config/wal/colorschemes/dark/"
+COLORSCHEME=$(ls $COLORSCHEME_DIR)
+
+option1="  Set wallpaper"
+option2="  Set colorscheme"
+option3="  Generate colorscheme from image"
+option4="  Exit"
+
+options="$option1\n$option2\n$option3\n$option4"
+
+choice=$(echo -e "$options" | rofi -theme $THEME -i -dmenu -no-show-icons -no-sidebar-mode -lines 4 -width 30 -p "  ") 
+
+post_run () {
+	xrdb $HOME/.cache/wal/colors.Xresources
+	mantablockscreen -i $1 &
+	sed -i "s| .\+| "$1"]]|" $HOME/.config/nvim/lua/colors/init.lua
+	genstarttree
+
+	# script that generates zathurarc
+	bash $HOME/.scripts/gendunstrc >> ~/.config/dunst/dunstrc
+	bash $HOME/.scripts/genzathurarc >> ~/.config/zathura/zathurarc
+	bash $HOME/.scripts/wal-telegram --wal
+
+	pkill dunst
+
+	dunstify -a 'Wally' 'Theme changed.' -t 1000
+} # post_run ()
+
+case $choice in
+	$option1)
+		WALLPAPER=$(sxiv -ort -N imagepicker $WALLPAPERS_DIR/*.jpg $WALLPAPERS_DIR/*.png $WALLPAPERS_DIR/*.jpeg $WALLPAPERS_DIR/*.webp)
+		feh --bg-fill $WALLPAPER 
+		cp $WALLPAPER ~/.cache/wal/wallpaper.jpg
+		post_run $WALLPAPER
+		dunstify -a 'Wally' 'Wallpaper changed.' -t 1000 -I $WALLPAPER
+		;;
+	$option2)
+		COLOR=$(echo $COLORSCHEME | sort | uniq | rofi -theme $THEME -sep " " -i -dmenu -p ' ' -no-show-icons -no-sidebar-mode -lines 4 -width 30)
+		if [ "$COLOR" != "" ] ; then
+			WALLPAPER=$(jq .wallpaper $COLORSCHEME_DIR$COLOR | sed 's/"//g')
+			feh --bg-fill $WALLPAPER 
+			cp $WALLPAPER ~/.cache/wal/wallpaper.jpg
+			wal --theme $COLORSCHEME_DIR$COLOR
+			post_run $WALLPAPER
+		fi
+		;;
+	$option3)
+		WALLPAPER=$(sxiv -ort -N imagepicker $WALLPAPERS_DIR/*.jpg $WALLPAPERS_DIR/*.png $WALLPAPERS_DIR/*.jpeg $WALLPAPERS_DIR/*.webp)
+		feh --bg-fill $WALLPAPER 
+		cp $WALLPAPER ~/.cache/wal/wallpaper.jpg
+		wal -i $WALLPAPER
+		post_run pywal $WALLPAPER
+		dunstify -a 'Wally' 'Theme changed.' -t 1000 -I $WALLPAPER
+		;;
+	$option4)
+		dunstify -a 'Wally' 'Exited.' -t 1000
+		exit ;;
+esac
