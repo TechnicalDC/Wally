@@ -24,7 +24,7 @@ choice=$(echo -e "$options" | rofi -theme $THEME -i -dmenu -no-show-icons -no-si
 post_run () {
 	xrdb $HOME/.cache/wal/colors.Xresources
 	mantablockscreen -i $1 &
-	sed -i "s| .\+| "$1"]]|" $HOME/.config/nvim/lua/colors/init.lua
+	# sed -i "s| .\+| "$1"]]|" $HOME/.config/nvim/lua/colors/init.lua
 	genstarttree
 
 	# script that generates zathurarc
