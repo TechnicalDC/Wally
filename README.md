@@ -20,3 +20,9 @@ favourite programs.
 Pywal already comes with tons of colorschemes. However, this repo have few
 additional colorschemes based on Neovim colorschemes. Just in case if you want
 your favourite neovim colorscheme on your entire system.
+
+## Todo
+
+- Add template for following programs
+	- Zathura
+	- Dunst
