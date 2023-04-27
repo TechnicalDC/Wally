@@ -3,11 +3,11 @@
 # .--.--.--.---.-.|  |  |.--.--.
 # |  |  |  |  _  ||  |  ||  |  |
 # |________|___._||__|__||___  |
-#					     |_____|
+#						       |_____|
 #
 # Github: https://github.com/TechnicalDC/dc-scripts
 
-THEME="$HOME/.config/rofi/themes/fancy_min.rasi"
+# THEME="$HOME/.config/rofi/themes/fancy_min.rasi"
 WALLPAPERS_DIR="$HOME/Wallpapers"
 COLORSCHEME_DIR="$HOME/.config/wal/colorschemes/dark/"
 COLORSCHEME=$(ls $COLORSCHEME_DIR)
@@ -19,7 +19,7 @@ option4="  Exit"
 
 options="$option1\n$option2\n$option3\n$option4"
 
-choice=$(echo -e "$options" | rofi -theme $THEME -i -dmenu -no-show-icons -no-sidebar-mode -lines 4 -width 30 -p "  ") 
+choice=$(echo -e "$options" | rofi -theme $ROFI_MINI -i -dmenu -no-show-icons -no-sidebar-mode -lines 4 -width 30 -p "  ") 
 
 post_run () {
 	xrdb $HOME/.cache/wal/colors.Xresources
@@ -46,7 +46,7 @@ case $choice in
 		dunstify -a 'Wally' 'Wallpaper changed.' -t 1000 -I $WALLPAPER
 		;;
 	$option2)
-		COLOR=$(echo $COLORSCHEME | sort | uniq | rofi -theme $THEME -sep " " -i -dmenu -p ' ' -no-show-icons -no-sidebar-mode -lines 4 -width 30)
+		COLOR=$(echo $COLORSCHEME | sort | uniq | rofi -theme $ROFI_MINI -sep " " -i -dmenu -p ' ' -no-show-icons -no-sidebar-mode -lines 4 -width 30)
 		if [ "$COLOR" != "" ] ; then
 			WALLPAPER=$(jq .wallpaper $COLORSCHEME_DIR$COLOR | sed 's/"//g')
 			feh --bg-fill $WALLPAPER 
