@@ -73,10 +73,22 @@ show () {
 	esac
 }
 
+help () {
+	echo "
+wally - wrapper program for pywal
+
+Usage: wally [OPTION] [ARGUMENT]
+
+	--wallpaper | -w				set wallpaper
+	--theme | -t					set colorscheme
+	--reload | -r					reload colorscheme
+	--help | -h						show this help text
+
+By default, it will show a rofi menu.
+	"
+}
+
 case $1 in
-	--show|-s)
-		show
-		;;
 	--wallpaper|-w)
 		setwallpaper $2
 		;;
@@ -85,5 +97,11 @@ case $1 in
 		;;
 	--reload|-r)
 		wal -R
+		;;
+	--help|-h)
+		help
+		;;
+	*)
+		show
 		;;
 esac
