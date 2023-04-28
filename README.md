@@ -15,6 +15,20 @@ favourite programs.
 - feh
 - Nerd font for icons (optional)
 
+## Getting Started
+```bash
+wally - wrapper program for pywal
+
+Usage: wally [OPTION] [ARGUMENT]
+
+	--wallpaper | -w				set wallpaper
+	--theme | -t					set colorscheme
+	--reload | -r					reload colorscheme
+	--help | -h						show this help text
+
+By default, it will show a rofi menu.
+```
+
 ## Themes
 
 Pywal already comes with tons of colorschemes. However, this repo have few
