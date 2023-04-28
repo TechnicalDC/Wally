@@ -19,8 +19,6 @@ option4="  Exit"
 
 options="$option1\n$option2\n$option3\n$option4"
 
-choice=$(echo -e "$options" | rofi -theme $ROFI_MINI -i -dmenu -no-show-icons -no-sidebar-mode -lines 4 -width 30 -p "  ") 
-
 post_run () {
 	xrdb $HOME/.cache/wal/colors.Xresources
 	mantablockscreen -i $1 &
@@ -37,33 +35,55 @@ post_run () {
 	dunstify -a 'Wally' 'Theme changed.' -t 1000
 } # post_run ()
 
-case $choice in
-	$option1)
-		WALLPAPER=$(sxiv -ort -N imagepicker $WALLPAPERS_DIR/*.jpg $WALLPAPERS_DIR/*.png $WALLPAPERS_DIR/*.jpeg $WALLPAPERS_DIR/*.webp)
-		feh --bg-fill $WALLPAPER 
-		cp $WALLPAPER ~/.cache/wal/wallpaper.jpg
-		post_run $WALLPAPER
-		dunstify -a 'Wally' 'Wallpaper changed.' -t 1000 -I $WALLPAPER
-		;;
-	$option2)
-		COLOR=$(echo $COLORSCHEME | sort | uniq | rofi -theme $ROFI_MINI -sep " " -i -dmenu -p ' ' -no-show-icons -no-sidebar-mode -lines 4 -width 30)
-		if [ "$COLOR" != "" ] ; then
-			WALLPAPER=$(jq .wallpaper $COLORSCHEME_DIR$COLOR | sed 's/"//g')
-			feh --bg-fill $WALLPAPER 
-			cp $WALLPAPER ~/.cache/wal/wallpaper.jpg
-			wal --theme $COLORSCHEME_DIR$COLOR
+setwallpaper () {
+	feh --bg-fill $1
+	cp $1 ~/.cache/wal/wallpaper.jpg
+}
+
+show () {
+	choice=$(echo -e "$options" | rofi -theme $ROFI_MINI -i -dmenu -no-show-icons -no-sidebar-mode -lines 4 -width 30 -p "  ") 
+
+	case $choice in
+		$option1)
+			WALLPAPER=$(sxiv -ort -N imagepicker $WALLPAPERS_DIR/*.jpg $WALLPAPERS_DIR/*.png $WALLPAPERS_DIR/*.jpeg $WALLPAPERS_DIR/*.webp)
+			setwallpaper $WALLPAPER
 			post_run $WALLPAPER
-		fi
+			dunstify -a 'Wally' 'Wallpaper changed.' -t 1000 -I $WALLPAPER
+			;;
+		$option2)
+			COLOR=$(echo $COLORSCHEME | sort | uniq | rofi -theme $ROFI_MINI -sep " " -i -dmenu -p ' ' -no-show-icons -no-sidebar-mode -lines 4 -width 30)
+			if [ "$COLOR" != "" ] ; then
+				WALLPAPER=$(jq .wallpaper $COLORSCHEME_DIR$COLOR | sed 's/"//g')
+				feh --bg-fill $WALLPAPER 
+				cp $WALLPAPER ~/.cache/wal/wallpaper.jpg
+				wal --theme $COLORSCHEME_DIR$COLOR
+				post_run $WALLPAPER
+			fi
+			;;
+		$option3)
+			WALLPAPER=$(sxiv -ort -N imagepicker $WALLPAPERS_DIR/*.jpg $WALLPAPERS_DIR/*.png $WALLPAPERS_DIR/*.jpeg $WALLPAPERS_DIR/*.webp)
+			setwallpaper $WALLPAPER
+			wal -i $WALLPAPER
+			post_run pywal $WALLPAPER
+			dunstify -a 'Wally' 'Theme changed.' -t 1000 -I $WALLPAPER
+			;;
+		$option4)
+			dunstify -a 'Wally' 'Exited.' -t 1000
+			exit ;;
+	esac
+}
+
+case $1 in
+	--show|-s)
+		show
 		;;
-	$option3)
-		WALLPAPER=$(sxiv -ort -N imagepicker $WALLPAPERS_DIR/*.jpg $WALLPAPERS_DIR/*.png $WALLPAPERS_DIR/*.jpeg $WALLPAPERS_DIR/*.webp)
-		feh --bg-fill $WALLPAPER 
-		cp $WALLPAPER ~/.cache/wal/wallpaper.jpg
-		wal -i $WALLPAPER
-		post_run pywal $WALLPAPER
-		dunstify -a 'Wally' 'Theme changed.' -t 1000 -I $WALLPAPER
+	--wallpaper|-w)
+		setwallpaper $2
 		;;
-	$option4)
-		dunstify -a 'Wally' 'Exited.' -t 1000
-		exit ;;
+	--theme|-t)
+		wal --theme $2
+		;;
+	--reload|-r)
+		wal -R
+		;;
 esac
