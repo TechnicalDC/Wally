@@ -16,7 +16,7 @@ favourite programs.
 - Nerd font for icons (optional)
 
 ## Getting Started
-```bash
+```
 wally - wrapper program for pywal
 
 Usage: wally [OPTION] [ARGUMENT]
